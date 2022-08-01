@@ -1,10 +1,6 @@
 module.exports = {
-  seo: {
-    title: 'NextJSStore',
-    description: 'Fast Demo Store',
-    titleTemplate: '%s | FastStore',
-    author: 'Store Framework',
-  },
+  // Theming
+  theme: 'custom-theme',
 
   // Ecommerce Platform
   platform: 'vtex',
@@ -29,7 +25,7 @@ module.exports = {
 
   // Lighthouse CI
   lighthouse: {
-    server: process.env.BASE_SITE_URL || 'http://localhost:3000',
+    server: process.env.BASE_SITE_URL || 'http://localhost:9000',
     pages: {
       home: '/',
       pdp: '/apple-magic-mouse/p',

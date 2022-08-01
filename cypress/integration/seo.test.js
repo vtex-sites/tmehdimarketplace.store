@@ -27,6 +27,11 @@ describe('Home Page Seo', () => {
       .should(($el) => {
         expect($el.attr('content')).to.eq('index,follow')
       })
+    cy.get('meta[name="googlebot"]')
+      .should('exist')
+      .should(($el) => {
+        expect($el.attr('content')).to.eq('index,follow')
+      })
     cy.get('link[rel="canonical"]')
       .should('exist')
       .should(($link) => {
@@ -84,6 +89,11 @@ describe('Product Page Seo', () => {
     cy.title().should('exist')
     cy.get('meta[name="description"]').should('exist')
     cy.get('meta[name="robots"]')
+      .should('exist')
+      .should(($el) => {
+        expect($el.attr('content')).to.eq('index,follow')
+      })
+    cy.get('meta[name="googlebot"]')
       .should('exist')
       .should(($el) => {
         expect($el.attr('content')).to.eq('index,follow')
@@ -169,6 +179,11 @@ describe('Collection Page Seo', () => {
     cy.title().should('exist')
     cy.get('meta[name="description"]').should('exist')
     cy.get('meta[name="robots"]')
+      .should('exist')
+      .should(($el) => {
+        expect($el.attr('content')).to.eq('index,follow')
+      })
+    cy.get('meta[name="googlebot"]')
       .should('exist')
       .should(($el) => {
         expect($el.attr('content')).to.eq('index,follow')
@@ -286,6 +301,11 @@ describe('Search Page Seo', () => {
     cy.title().should('exist')
     cy.get('meta[name="description"]').should('exist')
     cy.get('meta[name="robots"]')
+      .should('exist')
+      .should(($el) => {
+        expect($el.attr('content')).to.eq('noindex,follow')
+      })
+    cy.get('meta[name="googlebot"]')
       .should('exist')
       .should(($el) => {
         expect($el.attr('content')).to.eq('noindex,follow')

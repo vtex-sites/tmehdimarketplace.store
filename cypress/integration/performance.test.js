@@ -9,7 +9,12 @@ import { cypress } from '../../store.config'
 
 const { pages } = cypress
 
-const paths = [pages.home, pages.pdp, pages.collection]
+const paths = [
+  pages.pdp,
+  pages.home,
+  pages.collection,
+  pages.collection_filtered,
+]
 
 const testMark = (path, mark) => {
   cy.visit(path, options)
@@ -61,5 +66,22 @@ describe('React rendering performance', () => {
     const mark = 'ProductGallery'
 
     testMark(pages.collection, mark)
+  })
+
+  it('Renders toplevel component once', () => {
+    const testPage = (path) => {
+      cy.visit(path, options)
+      cy.waitForHydration()
+
+      cy.getById('react-hydrated').should(($div) => {
+        expect(Number($div.attr('data-render-count'))).to.not.gt(2)
+      })
+    }
+
+    testPage(pages.pdp)
+    testPage(pages.home)
+    testPage(pages.search)
+    testPage(pages.collection)
+    testPage(pages.collection_filtered)
   })
 })
