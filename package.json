@@ -44,6 +44,7 @@
     "gatsby-plugin-root-import": "^2.0.8",
     "gatsby-plugin-sass": "^5.16.0",
     "gatsby-plugin-webpack-bundle-analyser-v2": "^1.1.27",
+    "gatsby-source-graphql": "^4.19.0",
     "include-media": "^1.4.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -7,6 +7,20 @@ import config from './store.config'
 
 dotenv.config({ path: 'vtex.env' })
 
+
+// async function getVtexIdclientAutCookie(store: string, key: string, token: string) {
+//   const vtexIdResponse: any = await fetch('http://api.vtexcommercestable.com.br/api/vtexid/apptoken/login?an=' + store, {
+//     method: 'POST',
+//     body: JSON.stringify({
+//       'appkey': key,
+//       'apptoken': token
+//     }),
+//   })
+//   const vtedIdResponseJSON: any = await vtexIdResponse.json()
+//   return vtedIdResponseJSON.token
+// }
+
+
 const gatsbyConfig: GatsbyConfig = {
   jsxRuntime: 'automatic',
   siteMetadata: {
@@ -115,6 +129,49 @@ const gatsbyConfig: GatsbyConfig = {
     {
       resolve: 'gatsby-plugin-postcss',
     },
+    // {
+    //   resolve: '@vtex/gatsby-plugin-cms',
+    //   options: {
+    //     tenant: 'tmehdimarketplace',
+    //     workspace:'master',
+    //     environment: 'vtexcommercestable',
+    //   },
+    // }
+    // Simple config, passing URL
+    // {
+    //   resolve: "gatsby-source-graphql",
+    //   options: {
+    //     // Arbitrary name for the remote schema Query type
+    //     typeName: "SWAPI",
+    //     // Field under which the remote schema will be accessible. You'll use this in your Gatsby query
+    //     fieldName: "swapi",
+    //     // Url to query from
+    //     url: "https://swapi-graphql.netlify.app/.netlify/functions/index",
+    //   },
+    // },
+    // VTEX GraphQL
+    // {
+    //   resolve: "gatsby-source-graphql",
+    //   options: {
+    //     // Arbitrary name for the remote schema Query type
+    //     typeName: "VTEX",
+    //     // Field under which the remote schema will be accessible. You'll use this in your Gatsby query
+    //     fieldName: "vtex",
+    //     // Url to query from
+    //     url: "https://app.io.vtex.com/vtex.billing/v0/tmehdimarketplace/tmehdi2/_v/graphql",
+    //     //headers: {
+    //       //'X-VTEX-API-AppKey': 'vtexappkey-tmehdimarketplace-FMCJNP',
+    //       //'X-VTEX-API-AppToken': 'UVYYNRZZKARXMIEVRBYURLJDOQILOTHVQMNTUNXLEBEXMXRQEATOJBULHLHVGOFDCBJZANKALLQZRMBPGJJQQPBFSZKIEUNSCUFJUNDYYQTBCFVMSLXXAJSNAMJINOOX',
+    //       //'X-VTEX-API-AppKey': 'vtexappkey-vtex-SAOFUH',
+    //       //'X-VTEX-API-AppToken': 'XQQJFBKCVBBVXDLLUVXMVDTEDXYWKRNOTMHKSHBOQUCCWZAFMQCRENRXDMJGQUCYCUARBIURCUQDCDBFYLGDUDORMLXXIEAOCBZMKGUQTQHHFAOFBCDZVLJNXDQGQJJZ',
+    //     //},
+    //     headers: async () => {
+    //       return {
+    //         'Authorization': await getVtexIdclientAutCookie('tmehdimarketplace', 'vtexappkey-tmehdimarketplace-FMCJNP', 'UVYYNRZZKARXMIEVRBYURLJDOQILOTHVQMNTUNXLEBEXMXRQEATOJBULHLHVGOFDCBJZANKALLQZRMBPGJJQQPBFSZKIEUNSCUFJUNDYYQTBCFVMSLXXAJSNAMJINOOX'),
+    //       }
+    //     },
+    //   },
+    // },
   ],
 }
 
