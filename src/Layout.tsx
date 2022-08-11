@@ -6,8 +6,8 @@ import Toast from 'src/components/common/Toast'
 import RegionalizationBar from 'src/components/regionalization/RegionalizationBar'
 import { useUI } from 'src/sdk/ui/Provider'
 import type { PropsWithChildren } from 'react'
-
 import 'src/styles/pages/layout.scss'
+import { useSession } from '@faststore/sdk'
 
 const CartSidebar = lazy(() => import('src/components/cart/CartSidebar'))
 const RegionModal = lazy(
@@ -16,6 +16,16 @@ const RegionModal = lazy(
 
 function Layout({ children }: PropsWithChildren) {
   const { cart: displayCart, modal: displayModal } = useUI()
+  const { setSession } = useSession()
+
+  setSession({
+    person: {
+      id: 'cf2940ca-d459-4461-9420-a5ebcab0f9aa',
+      email: 'leslie.reyes@vtex.com.br',
+      givenName: 'Leslie',
+      familyName: 'Reyes',
+    },
+  })
 
   return (
     <>

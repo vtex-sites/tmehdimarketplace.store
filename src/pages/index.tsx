@@ -104,7 +104,7 @@ function Page(props: Props) {
         colorVariant="light"
       />
 
-      <TMehdi title="title"></TMehdi>
+      <TMehdi title="title" />
 
       <Suspense fallback={<ProductShelfSkeleton loading />}>
         <ProductShelf
