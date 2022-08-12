@@ -7,7 +7,6 @@ import config from './store.config'
 
 dotenv.config({ path: 'vtex.env' })
 
-
 // async function getVtexIdclientAutCookie(store: string, key: string, token: string) {
 //   const vtexIdResponse: any = await fetch('http://api.vtexcommercestable.com.br/api/vtexid/apptoken/login?an=' + store, {
 //     method: 'POST',
@@ -19,7 +18,6 @@ dotenv.config({ path: 'vtex.env' })
 //   const vtedIdResponseJSON: any = await vtexIdResponse.json()
 //   return vtedIdResponseJSON.token
 // }
-
 
 const gatsbyConfig: GatsbyConfig = {
   jsxRuntime: 'automatic',

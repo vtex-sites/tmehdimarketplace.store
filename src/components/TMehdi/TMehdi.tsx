@@ -2,7 +2,6 @@
 import useSWR from 'swr'
 // import { Image } from 'src/components/ui/Image'
 import { useSession } from '@faststore/sdk'
-import { CardImage } from '@faststore/ui'
 
 type TMehdiVariant = {
   /**
@@ -42,18 +41,21 @@ const TMehdi = ({ title }: TMehdiProps) => {
       <h2>{title}</h2>
       <div>
         {data && (
-          <>
-            <CardImage>
-              <img src={urlDesktop} alt="" width="200px" />
-            </CardImage>
-            <CardImage>
-              <img src={urlMobile} alt="" width="200px" />
-            </CardImage>
+          <div>
+            <picture>
+              <source media="(min-width: 601px)" srcSet={urlDesktop} />
+              <source media="(max-width: 600px)" srcSet={urlMobile} />
+              <img
+                src="https://cdn.pixabay.com/photo/2022/07/21/06/56/ocean-7335499_1280.jpg"
+                alt="test"
+              />
+            </picture>
+
             <h1>{urlDesktop}</h1>
             <h1>{urlMobile}</h1>
             <h1>{hrefImg}</h1>
             <p>{person?.id}</p>
-          </>
+          </div>
         )}
         {error && <h1>{error}</h1>}
       </div>
