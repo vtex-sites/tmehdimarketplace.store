@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { NextSeo } from 'next-seo'
+import { GatsbySeo } from 'gatsby-plugin-next-seo'
 
 import storeConfig from '../../store.config'
 
@@ -10,7 +10,7 @@ function Page() {
 
   return (
     <>
-      <NextSeo noindex nofollow />
+      <GatsbySeo noindex nofollow />
 
       <div>loading...</div>
     </>

@@ -1,25 +1,29 @@
 {
   "extends": "@vtex/tsconfig",
   "compilerOptions": {
+    "types": ["react/next"],
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "jsxImportSource": "react",
     "resolveJsonModule": true,
-    "module": "esnext",
-    "rootDir": "./",
-    "baseUrl": "./",
+    "module": "ESNext",
+    "rootDir": ".",
+    "baseUrl": ".",
     "noEmit": true,
     "allowJs": true,
     "paths": {
       "src/*": ["src/*"],
       "@generated/*": ["@generated/*"]
     },
-    "forceConsistentCasingInFileNames": true,
-    "strict": false,
-    "incremental": true,
-    "isolatedModules": true
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["*.d.ts", "src/**/*.ts", "src/**/*.tsx", "@generated/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "gatsby-*.ts",
+    "gatsby-*.tsx",
+    "@generated/**/*.ts"
+  ],
   "exclude": ["node_modules", "public"]
 }

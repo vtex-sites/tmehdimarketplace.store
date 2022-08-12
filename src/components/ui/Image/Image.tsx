@@ -1,5 +1,5 @@
 import { forwardRef, memo } from 'react'
-import Head from 'next/head'
+import { Helmet } from 'react-helmet-async'
 
 import { useImage } from './useImage'
 import type { ImageOptions } from './useImage'
@@ -22,7 +22,6 @@ interface Props extends ImageOptions {
   fetchPriority?: string
 }
 
-// TODO: Replace this component by next/image
 const Image = forwardRef<HTMLImageElement, Props>(
   ({ preload = false, fetchPriority, ...otherProps }, ref) => {
     const imgProps = useImage(otherProps)
@@ -31,7 +30,7 @@ const Image = forwardRef<HTMLImageElement, Props>(
     return (
       <>
         {preload && (
-          <Head>
+          <Helmet>
             <link
               as="image"
               rel="preload"
@@ -40,12 +39,11 @@ const Image = forwardRef<HTMLImageElement, Props>(
               imageSizes={sizes}
               fetchpriority={fetchPriority}
             />
-          </Head>
+          </Helmet>
         )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={ref}
-          data-store-image
+          data-fs-image
           {...imgProps}
           alt={imgProps.alt}
           fetchpriority={fetchPriority}

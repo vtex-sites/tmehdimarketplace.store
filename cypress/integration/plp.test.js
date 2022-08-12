@@ -22,7 +22,9 @@ describe('Search page Filters and Sorting options', () => {
     // Apply filters
     cy.getById('open-filter-button')
       .click()
-      .getById('mobile-store-filter-accordion-button')
+      .get(
+        `[data-testid=mobile-store-filter-accordion-item][data-type=StoreFacetBoolean]>[data-testid=mobile-store-filter-accordion-button]`
+      )
       .first()
       .click()
       .getById('mobile-store-filter-accordion-panel-checkbox')
@@ -33,7 +35,7 @@ describe('Search page Filters and Sorting options', () => {
         const value = $checkbox.attr('data-value')
         // const quantity = $checkbox.attr('data-quantity')
 
-        cy.getById('filter-modal-button-apply')
+        cy.getById('filter-slider-button-apply')
           .click()
 
           .then(() => {
@@ -185,6 +187,7 @@ describe('Infinite Scroll pagination', () => {
               })
               .then(() => {
                 cy.go('back')
+                cy.reload()
                   .get(
                     '[data-testid=product-gallery] [data-testid=store-product-card]'
                   )
@@ -207,16 +210,13 @@ describe('Infinite Scroll pagination', () => {
     cy.visit(pages.collection, options)
     cy.waitForHydration()
 
-    cy.getById('show-more')
-      .should('exist')
-      .click()
+    cy.getById('show-more').should('exist').click()
 
-      .getById('total-product-count')
-      .scrollIntoView({ duration: 1000 })
+    cy.scrollTo('top')
       .location('search')
       .should('match', /page=0$/)
 
-      .get('[data-testid=product-gallery] [data-testid=store-product-card]')
+    cy.get('[data-testid=product-gallery] [data-testid=store-product-card]')
       .last()
       .scrollIntoView({ duration: 1000 })
       .location('search')

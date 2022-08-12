@@ -1,12 +1,4 @@
 import { Card, CardActions, CardContent, CardImage } from '@faststore/ui'
-import type {
-  AddToCartEvent,
-  CurrencyCode,
-  RemoveFromCartEvent,
-} from '@faststore/sdk'
-import { sendAnalyticsEvent, useSession } from '@faststore/sdk'
-import { useCallback, useMemo } from 'react'
-
 import Button from 'src/components/ui/Button'
 import Icon from 'src/components/ui/Icon'
 import { Image } from 'src/components/ui/Image'
@@ -16,6 +8,13 @@ import { useCart } from 'src/sdk/cart/useCart'
 import { useRemoveButton } from 'src/sdk/cart/useRemoveButton'
 import { useFormattedPrice } from 'src/sdk/product/useFormattedPrice'
 import type { CartItem as ICartItem } from 'src/sdk/cart/validate'
+import { useCallback, useMemo } from 'react'
+import type {
+  AddToCartEvent,
+  CurrencyCode,
+  RemoveFromCartEvent,
+} from '@faststore/sdk'
+import { useSession, sendAnalyticsEvent } from '@faststore/sdk'
 import type { AnalyticsItem } from 'src/sdk/analytics/types'
 
 import styles from './cart-item.module.scss'

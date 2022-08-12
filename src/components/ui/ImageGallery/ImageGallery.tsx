@@ -1,9 +1,8 @@
 import { useState } from 'react'
-
 import { Image } from 'src/components/ui/Image'
-import styles from 'src/components/ui/ImageGallery/image-gallery.module.scss'
 
 import { ImageGallerySelector, ImageZoom } from '.'
+import styles from './image-gallery.module.scss'
 
 export interface ImageElementData {
   url: string

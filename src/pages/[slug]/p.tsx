@@ -1,37 +1,60 @@
-import { isNotFoundError } from '@faststore/api'
 import { useSession } from '@faststore/sdk'
-import { gql } from '@vtex/graphql-utils'
-import { BreadcrumbJsonLd, NextSeo, ProductJsonLd } from 'next-seo'
-import type { GetStaticPaths, GetStaticProps } from 'next'
-
+import { gql } from '@faststore/graphql-utils'
+import { graphql } from 'gatsby'
+import {
+  BreadcrumbJsonLd,
+  GatsbySeo,
+  ProductJsonLd,
+} from 'gatsby-plugin-next-seo'
 import ProductDetails from 'src/components/sections/ProductDetails'
 import ProductShelf from 'src/components/sections/ProductShelf'
-import { ITEMS_PER_SECTION } from 'src/constants'
 import { mark } from 'src/sdk/tests/mark'
-import { execute } from 'src/server'
+import type { PageProps } from 'gatsby'
 import type {
+  ProductPageQueryQuery,
   ServerProductPageQueryQuery,
-  ServerProductPageQueryQueryVariables,
+  ProductPageQueryQueryVariables,
 } from '@generated/graphql'
+import { ITEMS_PER_SECTION } from 'src/constants'
 
-import storeConfig from '../../../store.config'
+import 'src/styles/pages/pdp.scss'
 
-type Props = ServerProductPageQueryQuery
+export type Props = PageProps<
+  ProductPageQueryQuery,
+  ProductPageQueryQueryVariables,
+  unknown,
+  ServerProductPageQueryQuery | null
+> & { slug: string }
 
-function Page({ product }: Props) {
-  const { currency } = useSession()
-  const { seo } = product
-  const title = seo.title || storeConfig.seo.title
-  const description = seo.description || storeConfig.seo.description
-  const canonical = `${storeConfig.storeUrl}${seo.canonical}`
+function Page(props: Props) {
+  const { locale, currency } = useSession()
+  const {
+    data: { site },
+    serverData,
+  } = props
+
+  // No data was found
+  if (serverData === null) {
+    return null
+  }
+
+  const {
+    product,
+    product: { seo },
+  } = serverData
+
+  const title = seo.title || site?.siteMetadata?.title || ''
+  const description = seo.description || site?.siteMetadata?.description || ''
+  const canonical = `${site?.siteMetadata?.siteUrl}${seo.canonical}`
 
   return (
     <>
       {/* SEO */}
-      <NextSeo
+      <GatsbySeo
         title={title}
         description={description}
         canonical={canonical}
+        language={locale}
         openGraph={{
           type: 'og:product',
           url: canonical,
@@ -42,7 +65,7 @@ function Page({ product }: Props) {
             alt: img.alternateName,
           })),
         }}
-        additionalMetaTags={[
+        metaTags={[
           {
             property: 'product:price:amount',
             content: product.offers.lowPrice?.toString() ?? undefined,
@@ -57,7 +80,7 @@ function Page({ product }: Props) {
         itemListElements={product.breadcrumbList.itemListElement ?? []}
       />
       <ProductJsonLd
-        productName={product.name}
+        name={product.name}
         description={product.description}
         brand={product.brand.name}
         sku={product.sku}
@@ -81,20 +104,42 @@ function Page({ product }: Props) {
         If needed, wrap your component in a <Section /> component
         (not the HTML tag) before rendering it here.
       */}
-
       <ProductDetails product={product} />
 
       <ProductShelf
         first={ITEMS_PER_SECTION}
-        term={product.brand.name}
-        title="You might also like"
+        selectedFacets={[
+          { key: 'buy', value: product.isVariantOf.productGroupID },
+        ]}
+        title="People also bought"
         withDivisor
+      />
+
+      <ProductShelf
+        first={ITEMS_PER_SECTION}
+        selectedFacets={[
+          { key: 'view', value: product.isVariantOf.productGroupID },
+        ]}
+        title="People also view"
       />
     </>
   )
 }
 
-const query = gql`
+export const querySSG = graphql`
+  query ProductPageQuery {
+    site {
+      siteMetadata {
+        title
+        description
+        titleTemplate
+        siteUrl
+      }
+    }
+  }
+`
+
+export const querySSR = gql`
   query ServerProductPageQuery($slug: String!) {
     product(locator: [{ key: "slug", value: $slug }]) {
       id: productID
@@ -143,28 +188,42 @@ const query = gql`
         }
       }
 
+      isVariantOf {
+        productGroupID
+      }
+
       ...ProductDetailsFragment_product
     }
   }
 `
 
-export const getStaticProps: GetStaticProps<
-  ServerProductPageQueryQuery,
-  { slug: string }
-> = async ({ params }) => {
-  const { data, errors = [] } = await execute<
-    ServerProductPageQueryQueryVariables,
-    ServerProductPageQueryQuery
-  >({
-    variables: { slug: params?.slug ?? '' },
-    operationName: query,
+export const getServerData = async ({
+  params: { slug },
+}: {
+  params: Record<string, string>
+}) => {
+  const ONE_YEAR_CACHE = `s-maxage=31536000, stale-while-revalidate`
+  const { isNotFoundError } = await import('@faststore/api')
+  const { execute } = await import('src/server/index')
+  const { data, errors = [] } = await execute({
+    operationName: querySSR,
+    variables: { slug },
   })
 
   const notFound = errors.find(isNotFoundError)
 
   if (notFound) {
+    const params = new URLSearchParams({
+      from: encodeURIComponent(`/${slug}/p`),
+    })
+
     return {
-      notFound: true,
+      status: 301,
+      props: null,
+      headers: {
+        'cache-control': ONE_YEAR_CACHE,
+        location: `/404/?${params.toString()}}`,
+      },
     }
   }
 
@@ -173,14 +232,11 @@ export const getStaticProps: GetStaticProps<
   }
 
   return {
+    status: 200,
     props: data,
-  }
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking',
+    headers: {
+      'cache-control': ONE_YEAR_CACHE,
+    },
   }
 }
 

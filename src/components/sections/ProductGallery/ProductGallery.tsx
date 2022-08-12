@@ -1,8 +1,7 @@
 import { useSearch } from '@faststore/sdk'
-import { NextSeo } from 'next-seo'
+import { GatsbySeo } from 'gatsby-plugin-next-seo'
 import { lazy, Suspense } from 'react'
 import type { MouseEvent } from 'react'
-
 import Filter from 'src/components/search/Filter'
 import Sort from 'src/components/search/Sort'
 import FilterSkeleton from 'src/components/skeletons/FilterSkeleton'
@@ -15,11 +14,11 @@ import { useUI } from 'src/sdk/ui/Provider'
 
 import Section from '../Section'
 import EmptyGallery from './EmptyGallery'
-import styles from './product-gallery.module.scss'
 import { useDelayedFacets } from './useDelayedFacets'
 import { useDelayedPagination } from './useDelayedPagination'
 import { useGalleryQuery } from './useGalleryQuery'
 import { useProductsPrefetch } from './usePageProducts'
+import styles from './product-gallery.module.scss'
 
 const GalleryPage = lazy(() => import('./ProductGalleryPage'))
 const GalleryPageSkeleton = <ProductGridSkeleton loading />
@@ -102,9 +101,7 @@ function ProductGallery({ title, searchTerm }: Props) {
           {/* Add link to previous page. This helps on SEO */}
           {prev !== false && (
             <div data-fs-product-listing-pagination="top">
-              <NextSeo
-                additionalLinkTags={[{ rel: 'prev', href: prev.link }]}
-              />
+              <GatsbySeo defer linkTags={[{ rel: 'prev', href: prev.link }]} />
               <ButtonLink
                 onClick={(e: MouseEvent<HTMLElement>) => {
                   e.currentTarget.blur()
@@ -143,9 +140,7 @@ function ProductGallery({ title, searchTerm }: Props) {
           {/* Add link to next page. This helps on SEO */}
           {next !== false && (
             <div data-fs-product-listing-pagination="bottom">
-              <NextSeo
-                additionalLinkTags={[{ rel: 'next', href: next.link }]}
-              />
+              <GatsbySeo defer linkTags={[{ rel: 'next', href: next.link }]} />
               <ButtonLink
                 data-testid="show-more"
                 onClick={(e: MouseEvent<HTMLElement>) => {

@@ -1,5 +1,4 @@
 import { useSearch } from '@faststore/sdk'
-
 import ProductGrid from 'src/components/product/ProductGrid'
 import Sentinel from 'src/sdk/search/Sentinel'
 

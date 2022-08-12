@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect } from 'react'
-
 import { useCart } from 'src/sdk/cart/useCart'
 import { useUI } from 'src/sdk/ui/Provider'
 

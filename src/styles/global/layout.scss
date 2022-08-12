@@ -3,26 +3,28 @@
 // Layout
 // ----------------------------------------------------------
 
-@import "src/styles/scaffold";
+@import 'src/styles/scaffold';
 
 body {
+  --fs-body-bkg: var(--fs-color-body-bkg);
+
   min-height: 100vh;
   color: var(--fs-color-text);
-  background-color: var(--fs-color-body-bkg);
+  background: var(--fs-body-bkg);
 }
 
 main,
 .layout__main {
   display: flex;
   flex-wrap: wrap;
-  background-color: var(--fs-color-body-bkg);
+  background: var(--fs-body-bkg);
 }
 
 .layout__section {
   padding-bottom: var(--fs-spacing-4);
   margin-top: var(--fs-spacing-4);
 
-  @include media(">=notebook") {
+  @include media('>=notebook') {
     padding-bottom: var(--fs-grid-padding);
     margin-top: var(--fs-grid-padding);
   }
@@ -33,7 +35,7 @@ main,
   padding-top: var(--fs-spacing-4);
   padding-bottom: var(--fs-spacing-4);
 
-  @include media(">=notebook") {
+  @include media('>=notebook') {
     padding-top: var(--fs-grid-padding);
     padding-bottom: var(--fs-grid-padding);
   }
@@ -56,7 +58,7 @@ main,
 
 // Helper class
 .display-mobile {
-  @include media(">=notebook") {
+  @include media('>=notebook') {
     display: none;
     visibility: hidden;
   }
@@ -64,8 +66,15 @@ main,
 
 // Helper class
 .hidden-mobile {
-  @include media("<notebook") {
+  @include media('<notebook') {
     display: none;
     visibility: hidden;
   }
+}
+
+// Image
+[data-fs-image] {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

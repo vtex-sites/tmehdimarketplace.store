@@ -1,9 +1,9 @@
 import type { SelectProps } from '.'
 import Select from '.'
 
-const story = {
+export default {
   component: Select,
-  title: 'Atoms/Select',
+  title: 'Atoms/Select ⚠️',
 }
 
 const Template = ({ ...args }: SelectProps) => <Select {...args} />
@@ -19,5 +19,3 @@ Default.args = {
   label: 'Label',
   disabled: false,
 }
-
-export default story

@@ -1,7 +1,6 @@
 import { Select as UISelect, Label as UILabel } from '@faststore/ui'
-import type { SelectProps } from '@faststore/ui'
-
 import Icon from 'src/components/ui/Icon'
+import type { SelectProps } from '@faststore/ui'
 
 import styles from './select.module.scss'
 

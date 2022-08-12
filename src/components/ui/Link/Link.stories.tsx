@@ -1,9 +1,9 @@
 import type { LinkProps } from '.'
 import Link from '.'
 
-const story = {
+export default {
   component: Link,
-  title: 'Atoms/Link',
+  title: 'Atoms/Link ⚠️',
   argTypes: {
     href: {
       type: { name: 'string', required: true },
@@ -67,5 +67,3 @@ Inline.args = {
   variant: 'inline',
   inverse: false,
 }
-
-export default story

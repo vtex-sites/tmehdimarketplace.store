@@ -6,7 +6,6 @@ import {
 } from '@faststore/ui'
 import { useState } from 'react'
 import type { ReactElement, FormEvent } from 'react'
-
 import Button from 'src/components/ui/Button'
 import Icon from 'src/components/ui/Icon'
 import InputText from 'src/components/ui/InputText'

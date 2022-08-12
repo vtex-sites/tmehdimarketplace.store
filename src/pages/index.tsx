@@ -1,43 +1,62 @@
-import { NextSeo, SiteLinksSearchBoxJsonLd } from 'next-seo'
-import { Suspense } from 'react'
+import 'src/styles/pages/homepage.scss'
 
+import { useSession } from '@faststore/sdk'
+import { graphql } from 'gatsby'
+import { GatsbySeo, JsonLd } from 'gatsby-plugin-next-seo'
+import { Suspense } from 'react'
 import BannerText from 'src/components/sections/BannerText'
 import Hero from 'src/components/sections/Hero'
 import IncentivesHeader from 'src/components/sections/Incentives/IncentivesHeader'
-import IncentivesMock from 'src/components/sections/Incentives/incentivesMock'
+import { incentivesMockHeader as IncentivesMock } from 'src/components/sections/Incentives/incentivesMock'
 import ProductShelf from 'src/components/sections/ProductShelf'
 import ProductTiles from 'src/components/sections/ProductTiles'
 import ProductShelfSkeleton from 'src/components/skeletons/ProductShelfSkeleton'
 import ProductTilesSkeleton from 'src/components/skeletons/ProductTilesSkeleton'
 import { ITEMS_PER_SECTION } from 'src/constants'
 import { mark } from 'src/sdk/tests/mark'
+import type { PageProps } from 'gatsby'
+import type { HomePageQueryQuery } from '@generated/graphql'
+import TMehdi from 'src/components/TMehdi'
 
-import storeConfig from '../../store.config'
+export type Props = PageProps<HomePageQueryQuery>
 
-function Page() {
+function Page(props: Props) {
+  const {
+    data: { site },
+  } = props
+
+  const { locale } = useSession()
+
+  const title = site?.siteMetadata?.title ?? ''
+  const siteUrl = `${site?.siteMetadata?.siteUrl}`
+
   return (
     <>
       {/* SEO */}
-      <NextSeo
-        title={storeConfig.seo.title}
-        description={storeConfig.seo.description}
-        titleTemplate={storeConfig.seo.titleTemplate}
-        canonical={storeConfig.storeUrl}
+      <GatsbySeo
+        title={title}
+        description={site?.siteMetadata?.description ?? ''}
+        titleTemplate={site?.siteMetadata?.titleTemplate ?? ''}
+        language={locale}
+        canonical={siteUrl}
         openGraph={{
           type: 'website',
-          url: storeConfig.storeUrl,
-          title: storeConfig.seo.title,
-          description: storeConfig.seo.description,
+          url: siteUrl,
+          title: title ?? '',
+          description: site?.siteMetadata?.description ?? '',
         }}
       />
-      <SiteLinksSearchBoxJsonLd
-        url={storeConfig.storeUrl}
-        potentialActions={[
-          {
-            target: `${storeConfig.storeUrl}/s/?q={search_term_string}`,
-            queryInput: 'required name=search_term_string',
+      <JsonLd
+        json={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          url: siteUrl,
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: `${siteUrl}/s/?q={search_term_string}`,
+            'query-input': 'required name=search_term_string',
           },
-        ]}
+        }}
       />
 
       {/*
@@ -52,7 +71,7 @@ function Page() {
         (not the HTML tag) before rendering it here.
       */}
       <Hero
-        title="New Offers"
+        title="New Products Available"
         subtitle="At BaseStore you can shop the best tech of 2022. Enjoy and get 10% off on your first purchase."
         linkText="See all"
         link="/technology"
@@ -82,7 +101,10 @@ function Page() {
         title="Receive our news and promotions in advance. Enjoy and get 10% off on your first purchase."
         actionPath="/"
         actionLabel="Call to action"
+        colorVariant="light"
       />
+
+      <TMehdi title="title" />
 
       <Suspense fallback={<ProductShelfSkeleton loading />}>
         <ProductShelf
@@ -94,6 +116,19 @@ function Page() {
     </>
   )
 }
+
+export const querySSG = graphql`
+  query HomePageQuery {
+    site {
+      siteMetadata {
+        title
+        description
+        titleTemplate
+        siteUrl
+      }
+    }
+  }
+`
 
 Page.displayName = 'Page'
 export default mark(Page)

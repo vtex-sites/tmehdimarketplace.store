@@ -1,7 +1,6 @@
 import { Banner, BannerContent, BannerLink } from '@faststore/ui'
-import type { HTMLAttributes } from 'react'
-
 import { ButtonLink } from 'src/components/ui/Button'
+import type { HTMLAttributes } from 'react'
 
 import Section from '../Section'
 

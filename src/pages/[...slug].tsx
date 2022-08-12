@@ -1,16 +1,13 @@
-import { isNotFoundError } from '@faststore/api'
 import {
-  formatSearchState,
   parseSearchState,
   SearchProvider,
+  useSession,
+  formatSearchState,
 } from '@faststore/sdk'
-import { gql } from '@vtex/graphql-utils'
-import { BreadcrumbJsonLd, NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import type { SearchState } from '@faststore/sdk'
-import type { GetStaticPaths, GetStaticProps } from 'next'
-
+import { gql } from '@faststore/graphql-utils'
+import { graphql } from 'gatsby'
+import { BreadcrumbJsonLd, GatsbySeo } from 'gatsby-plugin-next-seo'
+import { useMemo } from 'react'
 import Breadcrumb from 'src/components/sections/Breadcrumb'
 import Hero from 'src/components/sections/Hero'
 import ProductGallery from 'src/components/sections/ProductGallery'
@@ -18,63 +15,69 @@ import ProductShelf from 'src/components/sections/ProductShelf'
 import ScrollToTopButton from 'src/components/sections/ScrollToTopButton'
 import Icon from 'src/components/ui/Icon'
 import { ITEMS_PER_PAGE, ITEMS_PER_SECTION } from 'src/constants'
-import { useApplySearchState } from 'src/sdk/search/state'
+import { applySearchState } from 'src/sdk/search/state'
 import { mark } from 'src/sdk/tests/mark'
-import { execute } from 'src/server'
 import type {
+  CollectionPageQueryQuery,
   ServerCollectionPageQueryQuery,
-  ServerCollectionPageQueryQueryVariables,
+  CollectionPageQueryQueryVariables,
 } from '@generated/graphql'
+import type { PageProps } from 'gatsby'
+import type { SearchState } from '@faststore/sdk'
 
-import storeConfig from '../../store.config'
+import 'src/styles/pages/plp.scss'
 
-type Props = ServerCollectionPageQueryQuery
+type Props = PageProps<
+  CollectionPageQueryQuery,
+  CollectionPageQueryQueryVariables,
+  unknown,
+  ServerCollectionPageQueryQuery | null
+> & { slug: string }
 
-const useSearchParams = ({ collection }: Props): SearchState => {
-  const selectedFacets = collection?.meta.selectedFacets
-  const { asPath } = useRouter()
-  const [params, setParams] = useState<SearchState>(() => {
-    const state = parseSearchState(new URL(asPath, 'http://localhost'))
+const useSearchParams = (props: Props): SearchState => {
+  const {
+    location: { href, pathname },
+    serverData,
+  } = props
 
-    return {
-      ...state,
-      selectedFacets:
-        state.selectedFacets.length > 0 ? state.selectedFacets : selectedFacets,
-    }
-  })
+  const selectedFacets = serverData?.collection?.meta.selectedFacets
 
-  useEffect(() => {
-    const url = new URL(asPath, 'http://localhost')
-    const newState = parseSearchState(url)
+  const hrefState = useMemo(() => {
+    const newState = parseSearchState(
+      new URL(href ?? pathname, 'http://localhost')
+    )
 
     // In case we are in an incomplete url
     if (newState.selectedFacets.length === 0) {
-      newState.selectedFacets = selectedFacets
+      newState.selectedFacets = selectedFacets ?? []
     }
 
-    setParams((oldState) => {
-      const newURL = formatSearchState(newState).href
-      const oldURL = formatSearchState(oldState).href
+    return formatSearchState(newState).href
+  }, [href, pathname, selectedFacets])
 
-      return newURL === oldURL ? oldState : newState
-    })
-  }, [asPath, selectedFacets])
-
-  return params
+  return useMemo(() => parseSearchState(new URL(hrefState)), [hrefState])
 }
 
 function Page(props: Props) {
-  const { collection } = props
-  const router = useRouter()
-  const applySearchState = useApplySearchState()
+  const {
+    data: { site },
+    serverData,
+    slug,
+  } = props
+
+  const { locale } = useSession()
   const searchParams = useSearchParams(props)
 
+  // No data was found
+  if (serverData === null) {
+    return null
+  }
+
+  const { collection } = serverData
   const { page } = searchParams
-  const title = collection?.seo.title ?? storeConfig.seo.title
-  const description = collection?.seo.description ?? storeConfig.seo.title
+  const title = collection?.seo.title ?? site?.siteMetadata?.title ?? ''
   const pageQuery = page !== 0 ? `?page=${page}` : ''
-  const [pathname] = router.asPath.split('?')
-  const canonical = `${storeConfig.storeUrl}${pathname}${pageQuery}`
+  const canonical = `${site?.siteMetadata?.siteUrl}/${slug}${pageQuery}`
 
   return (
     <SearchProvider
@@ -83,15 +86,16 @@ function Page(props: Props) {
       {...searchParams}
     >
       {/* SEO */}
-      <NextSeo
+      <GatsbySeo
         title={title}
-        description={description}
-        titleTemplate={storeConfig.seo.titleTemplate}
+        titleTemplate={site?.siteMetadata?.titleTemplate ?? ''}
+        description={site?.siteMetadata?.description ?? ''}
         canonical={canonical}
+        language={locale}
         openGraph={{
           type: 'website',
           title,
-          description,
+          description: site?.siteMetadata?.description ?? '',
         }}
       />
       <BreadcrumbJsonLd
@@ -137,7 +141,20 @@ function Page(props: Props) {
   )
 }
 
-const query = gql`
+export const querySSG = graphql`
+  query CollectionPageQuery {
+    site {
+      siteMetadata {
+        titleTemplate
+        title
+        description
+        siteUrl
+      }
+    }
+  }
+`
+
+export const querySSR = gql`
   query ServerCollectionPageQuery($slug: String!) {
     collection(slug: $slug) {
       seo {
@@ -161,23 +178,33 @@ const query = gql`
   }
 `
 
-export const getStaticProps: GetStaticProps<
-  ServerCollectionPageQueryQuery,
-  { slug: string[] }
-> = async ({ params }) => {
-  const { data, errors = [] } = await execute<
-    ServerCollectionPageQueryQueryVariables,
-    ServerCollectionPageQueryQuery
-  >({
-    variables: { slug: params?.slug.join('/') ?? '' },
-    operationName: query,
+export const getServerData = async ({
+  params: { slug },
+}: {
+  params: Record<string, string>
+}) => {
+  const ONE_YEAR_CACHE = `s-maxage=31536000, stale-while-revalidate`
+  const { isNotFoundError } = await import('@faststore/api')
+  const { execute } = await import('src/server/index')
+  const { data, errors = [] } = await execute({
+    operationName: querySSR,
+    variables: { slug },
   })
 
   const notFound = errors.find(isNotFoundError)
 
   if (notFound) {
+    const params = new URLSearchParams({
+      from: encodeURIComponent(`/${slug}`),
+    })
+
     return {
-      notFound: true,
+      status: 301,
+      props: null,
+      headers: {
+        'cache-control': ONE_YEAR_CACHE,
+        location: `/404/?${params.toString()}}`,
+      },
     }
   }
 
@@ -186,14 +213,11 @@ export const getStaticProps: GetStaticProps<
   }
 
   return {
+    status: 200,
     props: data,
-  }
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking',
+    headers: {
+      'cache-control': ONE_YEAR_CACHE,
+    },
   }
 }
 

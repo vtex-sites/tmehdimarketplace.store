@@ -2,9 +2,9 @@ import UIProvider, { useUI } from 'src/sdk/ui/Provider'
 
 import Toast from '.'
 
-const story = {
+export default {
   component: Toast,
-  title: 'Atoms/Toast',
+  title: 'Atoms/Toast ⚠️',
 }
 
 const Template = () => {
@@ -48,5 +48,3 @@ const TemplateWithProvider = () => {
 export const Default = TemplateWithProvider.bind({})
 
 Default.args = {}
-
-export default story

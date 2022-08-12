@@ -1,9 +1,8 @@
-import { useMemo, useRef } from 'react'
-
 import type {
   Filter_FacetsFragment,
   ProductGalleryQueryQuery,
 } from '@generated/graphql'
+import { useMemo, useRef } from 'react'
 
 export const useDelayedFacets = (data?: ProductGalleryQueryQuery) => {
   const facets = useRef<Filter_FacetsFragment[]>([])
