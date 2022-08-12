@@ -1,5 +1,4 @@
 import useSWR from 'swr'
-import { Banner, BannerContent, BannerImage, BannerLink } from '@faststore/ui'
 import { useSession } from '@faststore/sdk'
 
 type TMehdiVariant = {
