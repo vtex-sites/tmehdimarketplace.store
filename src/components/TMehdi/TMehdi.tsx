@@ -75,8 +75,7 @@ const TMehdi = ({ title }: TMehdiProps) => {
                       <source
                         media="(max-width: 600px)"
                         srcSet={urlMobile}
-                        width="500px"
-                        height="250px"
+                        width="320px"
                       />
 
                       <img
